@@ -16,12 +16,12 @@ class ConsumerFactory<T extends Class<? extends MessageConsumer>> extends Abstra
 
 
     @Override
-    public T fetch(String messageKey) {
+    public T retrieve(String messageKey) {
         return mapper.getOrDefault(messageKey, null);
     }
 
     @Override
-    public void addFor(String messageKey, T t) {
+    public void register(String messageKey, T t) {
         mapper.put(messageKey, t);
     }
 

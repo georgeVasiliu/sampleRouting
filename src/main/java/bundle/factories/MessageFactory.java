@@ -22,7 +22,7 @@ class MessageFactory<K> extends AbstractFactory<Message<K>> {
 
 
     @Override
-    public Message<K> fetch(String messageKey) {
+    public Message<K> retrieve(String messageKey) {
         if (!messageKeys.contains(messageKey)) {
             messageKeys.add(messageKey);
         }
@@ -30,7 +30,7 @@ class MessageFactory<K> extends AbstractFactory<Message<K>> {
     }
 
     @Override
-    public void addFor(String messageKey, Message<K> kMessage) {
-        //not needed since the fetch automatically updates the list
+    public void register(String messageKey, Message<K> kMessage) {
+        throw new UnsupportedOperationException("register not implemented, retrieve automatically creates the message!");
     }
 }
