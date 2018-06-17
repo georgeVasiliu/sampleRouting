@@ -14,6 +14,6 @@ public class TestComplexValidator implements MessageValidator {
             return false;
         }
         String expectedString = (String) args[1];
-        return !expectedString.equalsIgnoreCase("expectedstring");
+        return expectedString.equalsIgnoreCase("expectedstring");
     }
 }

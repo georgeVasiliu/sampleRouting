@@ -17,7 +17,7 @@ public enum FactoryType {
     VALIDATION {
         @Override
         public AbstractFactory getFactory() {
-            return new MessageFactory();
+            return new ValidationFactory();
         }
     };
 

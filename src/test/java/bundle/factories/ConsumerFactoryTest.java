@@ -50,6 +50,6 @@ public class ConsumerFactoryTest {
         Message<Boolean> message = new MessageImpl<>();
         message.setArgs(2, 2);
         consumerFactory.retrieve("expectedMessage").newInstance().consume(message);
-        assertFalse(message.getResult());
+        assertTrue(message.getResult());
     }
 }

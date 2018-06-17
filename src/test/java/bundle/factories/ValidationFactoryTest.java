@@ -28,7 +28,7 @@ public class ValidationFactoryTest {
         validationFactory.register("expectedMessage", new TestExceptionValidator());
         MessageValidator validator = validationFactory.retrieve("expectedMessage");
         try {
-            validator.validateArguments(null);
+            validator.validateArguments(new Object[]{});
         } catch (ValidationException e) {
             assertTrue(e.getMessage().contains("Expected 2 arguments, got 0"));
         }
@@ -40,7 +40,7 @@ public class ValidationFactoryTest {
         validationFactory.register("expectedMessage", new TestComplexValidator());
         MessageValidator validator = validationFactory.retrieve("expectedMessage");
         try {
-            validator.validateArguments(null);
+            validator.validateArguments(new Object[]{});
         } catch (ValidationException e) {
             assertTrue(e.getMessage().contains("Expected 2 arguments, got 0"));
         }
