@@ -16,12 +16,12 @@ class ValidationFactory<T extends MessageValidator> extends AbstractFactory<T> {
 
 
     @Override
-    public T fetch(String messageKey) {
+    public T retrieve(String messageKey) {
         return map.getOrDefault(messageKey, null);
     }
 
     @Override
-    public void addFor(String messageKey, T t) {
+    public void register(String messageKey, T t) {
         map.put(messageKey, t);
     }
 }

@@ -1,32 +1,35 @@
 package bundle.factories;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class FactoryProducerTest {
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
-    @AfterEach
-    void tearDown() {
-
+    @Test
+    void testGetValidationFactory() {
+        AbstractFactory validationFactory = FactoryProducer.getFactory(FactoryType.VALIDATION);
+        assertNotNull(validationFactory);
     }
 
     @Test
-    void getFactory() {
-        ValidationFactory validationFactory = (ValidationFactory) FactoryProducer.getFactory(FACTORY_TYPE.VALIDATION);
-        ConsumerFactory consumerFactory = (ConsumerFactory) FactoryProducer.getFactory(FACTORY_TYPE.CONSUMER);
-        MessageFactory messageFactory = (MessageFactory) FactoryProducer.getFactory(FACTORY_TYPE.MESSAGE);
-
-
-        assertNotNull(validationFactory);
+    void testGetConsumerFactory() {
+        AbstractFactory consumerFactory = FactoryProducer.getFactory(FactoryType.CONSUMER);
         assertNotNull(consumerFactory);
+    }
+
+    @Test
+    void testGetMessageFactory() {
+        AbstractFactory messageFactory = FactoryProducer.getFactory(FactoryType.MESSAGE);
         assertNotNull(messageFactory);
     }
+
+    @Test
+    void testRandomExpectedNullFetch() {
+        AbstractFactory consumerFactory = FactoryProducer.getFactory(FactoryType.CONSUMER);
+        assertNull(consumerFactory.retrieve("shouldReturnNull"));
+    }
+
+
 }

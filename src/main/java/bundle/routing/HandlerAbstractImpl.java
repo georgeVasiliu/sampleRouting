@@ -5,16 +5,18 @@ import bundle.exceptions.RoutingException;
 import bundle.exceptions.ValidationException;
 import bundle.factories.AbstractFactory;
 import bundle.factories.FactoryProducer;
+import bundle.factories.FactoryType;
 import bundle.message.Message;
 import bundle.message.MessageConsumer;
 import bundle.message.MessageValidator;
 
 import java.util.concurrent.CompletableFuture;
 
-import static bundle.factories.FACTORY_TYPE.*;
+import static bundle.factories.FactoryType.MESSAGE;
+import static bundle.factories.FactoryType.VALIDATION;
 
 public abstract class HandlerAbstractImpl implements Handler {
-    private AbstractFactory<Class<? extends MessageConsumer>> consumerFactory = FactoryProducer.getFactory(CONSUMER);
+    private AbstractFactory<Class<? extends MessageConsumer>> consumerFactory = FactoryProducer.getFactory(FactoryType.CONSUMER);
     private AbstractFactory<MessageValidator> validationFactory = FactoryProducer.getFactory(VALIDATION);
     private AbstractFactory<Message> messageFactory = FactoryProducer.getFactory(MESSAGE);
 
@@ -23,9 +25,9 @@ public abstract class HandlerAbstractImpl implements Handler {
         if (!messageValidator.validateArguments(args)) {
             throw new ValidationException("Arguments failed validation for message: " + message + "!");
         }
-        Message<T> message1 = messageFactory.fetch(message);
-        validationFactory.addFor(message, messageValidator);
-        consumerFactory.addFor(message, kClass);
+        Message<T> message1 = messageFactory.retrieve(message);
+        validationFactory.register(message, messageValidator);
+        consumerFactory.register(message, kClass);
         message1.setTarget(kClass);
         message1.setArgs(args);
         return processAsync(message1);
@@ -33,12 +35,12 @@ public abstract class HandlerAbstractImpl implements Handler {
 
     @Override
     public <T, K extends MessageConsumer> CompletableFuture<T> runAsync(String message, Class<K> nClass, Object... args) throws Exception {
-        MessageValidator validator = validationFactory.fetch(message);
+        MessageValidator validator = validationFactory.retrieve(message);
         if (validator != null && !validator.validateArguments(args)) {
             throw new ValidationException(("Arguments failed validation for message: " + message + "!"));
         }
-        Message<T> message1 = messageFactory.fetch(message);
-        consumerFactory.addFor(message, nClass);
+        Message<T> message1 = messageFactory.retrieve(message);
+        consumerFactory.register(message, nClass);
         message1.setTarget(nClass);
         message1.setArgs(args);
         return processAsync(message1);
@@ -46,12 +48,12 @@ public abstract class HandlerAbstractImpl implements Handler {
 
     @Override
     public <T, M extends MessageValidator> CompletableFuture<T> runAsync(String message, M validator, Object... args) throws Exception {
-        Message<T> message1 = messageFactory.fetch(message);
+        Message<T> message1 = messageFactory.retrieve(message);
         if (!validator.validateArguments(args)) {
             throw new ValidationException("Arguments failed validation for message: " + message + "!");
         }
-        validationFactory.addFor(message, validator);
-        Class<? extends MessageConsumer> nClass = consumerFactory.fetch(message);
+        validationFactory.register(message, validator);
+        Class<? extends MessageConsumer> nClass = consumerFactory.retrieve(message);
         if (nClass == null) {
             throw new RoutingException("No target class found for message: " + message + "! Please first provide a target class for the message then use this method!");
         }
@@ -62,15 +64,15 @@ public abstract class HandlerAbstractImpl implements Handler {
 
     @Override
     public <T> CompletableFuture<T> runAsync(String message, Object... args) throws Exception {
-        MessageValidator validator = validationFactory.fetch(message);
+        MessageValidator validator = validationFactory.retrieve(message);
         if (validator != null && !validator.validateArguments(args)) {
             throw new ValidationException(("Arguments failed validation for message: " + message + "!"));
         }
-        Class<? extends MessageConsumer> nClass = consumerFactory.fetch(message);
+        Class<? extends MessageConsumer> nClass = consumerFactory.retrieve(message);
         if (nClass == null) {
             throw new RoutingException("No target class found for message: " + message + "! Please first provide a target class for the message then use this method!");
         }
-        Message<T> message1 = messageFactory.fetch(message);
+        Message<T> message1 = messageFactory.retrieve(message);
         message1.setTarget(nClass);
         message1.setArgs(args);
         return processAsync(message1);
@@ -81,9 +83,9 @@ public abstract class HandlerAbstractImpl implements Handler {
         if (!messageValidator.validateArguments(args)) {
             throw new ValidationException("Arguments failed validation for message: " + message + "!");
         }
-        Message<T> message1 = messageFactory.fetch(message);
-        validationFactory.addFor(message, messageValidator);
-        consumerFactory.addFor(message, nClass);
+        Message<T> message1 = messageFactory.retrieve(message);
+        validationFactory.register(message, messageValidator);
+        consumerFactory.register(message, nClass);
         message1.setTarget(nClass);
         message1.setArgs(args);
         return process(message1);
@@ -91,12 +93,12 @@ public abstract class HandlerAbstractImpl implements Handler {
 
     @Override
     public <T, K extends MessageConsumer> T run(String message, Class<K> nClass, Object... args) throws Exception {
-        MessageValidator validator = validationFactory.fetch(message);
+        MessageValidator validator = validationFactory.retrieve(message);
         if (validator != null && !validator.validateArguments(args)) {
             throw new ValidationException("Arguments failed validation for message: " + message + "!");
         }
-        Message<T> message1 = messageFactory.fetch(message);
-        consumerFactory.addFor(message, nClass);
+        Message<T> message1 = messageFactory.retrieve(message);
+        consumerFactory.register(message, nClass);
         message1.setTarget(nClass);
         message1.setArgs(args);
         return process(message1);
@@ -107,11 +109,11 @@ public abstract class HandlerAbstractImpl implements Handler {
         if (!validator.validateArguments(args)) {
             throw new ValidationException("Arguments failed validation for message: " + message + "!");
         }
-        Class<? extends MessageConsumer> nClass = consumerFactory.fetch(message);
+        Class<? extends MessageConsumer> nClass = consumerFactory.retrieve(message);
         if (nClass == null) {
             throw new RoutingException("No target class found for message: " + message + "! Please first provide a target class for the message then use this method!");
         }
-        Message<T> message1 = messageFactory.fetch(message);
+        Message<T> message1 = messageFactory.retrieve(message);
         message1.setTarget(nClass);
         message1.setArgs(args);
         return process(message1);
@@ -119,15 +121,15 @@ public abstract class HandlerAbstractImpl implements Handler {
 
     @Override
     public <T> T run(String message, Object... args) throws Exception {
-        MessageValidator validator = validationFactory.fetch(message);
+        MessageValidator validator = validationFactory.retrieve(message);
         if (validator != null && !validator.validateArguments(args)) {
             throw new ValidationException(("Arguments failed validation for message: " + message + "!"));
         }
-        Class<? extends MessageConsumer> nClass = consumerFactory.fetch(message);
+        Class<? extends MessageConsumer> nClass = consumerFactory.retrieve(message);
         if (nClass == null) {
             throw new RoutingException("No target class found for message: " + message + "! Please first provide a target class for the message then use this method!");
         }
-        Message<T> message1 = messageFactory.fetch(message);
+        Message<T> message1 = messageFactory.retrieve(message);
         message1.setTarget(nClass);
         message1.setArgs(args);
         return process(message1);

@@ -3,11 +3,8 @@ package bundle.factories;
 
 public abstract class AbstractFactory<T> {
 
-    AbstractFactory() {
-    }
+    public abstract T retrieve(String messageKey);
 
-    public abstract T fetch(String messageKey);
-
-    public abstract void addFor(String messageKey, T t);
+    public abstract void register(String messageKey, T t);
 
 }
