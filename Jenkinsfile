@@ -6,14 +6,10 @@ pipeline {
         sh 'mvn package'
       }
     }
-    stage('Test') {
+    stage('Tests & report') {
       steps {
         sh 'mvn test'
-      }
-    }
-    stage('Test results display') {
-      steps {
-        junit 'target/surefire-reports/*.xml'
+        junit(testResults: 'target/surefire-reports/*.xml', allowEmptyResults: true)
       }
     }
   }
